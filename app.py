@@ -1,3 +1,4 @@
+from sys import implementation
 import dash
 from dash import dcc
 from dash import html
@@ -9,7 +10,7 @@ from utility.form_group import formGroup
 from datetime import datetime as dt
 import skrf as rf
 from skrf.time import detect_span
-
+from utility.utils import callback_fuc
 external_stylesheets = [
     "https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css",
     "https://codepen.io/chriddyp/pen/bWLwgP.css",
@@ -42,21 +43,29 @@ app.layout = html.Div(
 )
 
 
-@app.callback(
-    Output(component_id="case_name_row_output", component_property='children'),
-    Input(component_id="case_name_row", component_property='value')
-    )
-def update_output_div_case_name_row(input_value):
-    return (input_value)
+# @app.callback(
+#     Output(component_id="case_name_row_output", component_property='children'),
+#     Input(component_id="case_name_row", component_property='value')
+#     )
+# def update_output_div_case_name_row(input_value):
+#     return (input_value)
 
-
 @app.callback(
-    Output('dd-output-container', 'children'),
-    Input('demo-dropdown', 'value')
+    Output('area_output', 'children'),
+    Input('area', 'value')
 )
-def update_output(value):
-    return f'You have selected {value}'
+def regional_bonus(value):
+    return callback_fuc.regional_bonus(value)
 
+@app.callback(
+    Output("modal", "is_open"),
+    [Input("open", "n_clicks"), Input("close", "n_clicks")],
+    [State("modal", "is_open")],
+)
+def toggle_modal(n1, n2, is_open):
+    if n1 or n2:
+        return not is_open
+    return is_open
 
 if __name__ == "__main__":
     app.run_server(debug=True)
