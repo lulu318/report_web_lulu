@@ -5,13 +5,21 @@ import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output, State
 import plotly.graph_objects as go
 import numpy as np
-
-
+from datetime import datetime as dt
+import datetime
 import skrf as rf
 from skrf.time import detect_span
 
 app = dash.Dash(__name__)
 server = app.server
+
+
+def get_date():
+    # Function to check for dynamic date change, for testing purpose only
+    import random
+    change = random.randint(1, 20)
+    return (datetime.datetime.today() - datetime.timedelta(change)).date()
+
 
 email_input = dbc.Row(
     [
@@ -64,7 +72,8 @@ radios_input = dbc.Row(
 )
 
 
-form1 = dbc.Form([email_input], className="border border-primary", style={'border-width':'3px', 'border-style':'dashed', 'border-color':'#FFAC55', 'padding':'5px'})
+form1 = dbc.Form([email_input], className="border border-primary", style={
+                 'border-width': '3px', 'border-style': 'dashed', 'border-color': '#FFAC55', 'padding': '5px'})
 form2 = dbc.Form([password_input, radios_input])
 form3 = dbc.Form(
     dbc.Row(
@@ -105,6 +114,17 @@ form4 = dbc.Form(
         className="g-2",
     )
 )
+
+time = dcc.DatePickerSingle(
+    id='my-date-picker-single',
+    min_date_allowed=dt(1995, 8, 5),
+    max_date_allowed=dt(2023, 9, 19),
+    date=get_date()  # for testing purpose
+    # date=datetime.datetime.today().date() # Actual code
+),
+html.Div(
+    id='output-container-date-picker-single'),
+html.Div(datetime.datetime.now().strftime("%H:%M:%S"))
 
 
 # the APP

@@ -1,3 +1,4 @@
+from enum import auto
 import dash
 from dash import dcc
 from dash import html
@@ -45,6 +46,21 @@ def label_name(label_text, _html_for, **kwargs):
     return label
 
 
+def dropdown_item(_id, items:list, label_name, color):
+    dropdown = dbc.DropdownMenu(
+        items,
+        id=_id,
+        label=label_name,
+        className="m-1",
+        toggle_style={
+            "textTransform": "uppercase",
+            "background": color,
+        },
+        toggleClassName="fst-italic border border-dark",
+    )
+    return dropdown
+
+
 def input_frame_label_name(label_text, _id, unit=None, _width=3, __type="number"):
     if unit:
         _group = group_text(
@@ -60,6 +76,7 @@ def input_frame_label_name(label_text, _id, unit=None, _width=3, __type="number"
             _group
         ],
         width=_width,
+        className="mb-4",
     )
     return col
 
@@ -73,3 +90,13 @@ def radio_items_label_name(label_text, _id, _options: list):
         width=3
     )
     return col
+
+# def dropdown_items_label_name(_id, items:list, label_name, color):
+#     col = dbc.Col(
+#         [
+#             label_name(label_text, _id),
+#             radio_items(_id, _options),
+#         ],
+#         width=3
+#     )
+#     return col

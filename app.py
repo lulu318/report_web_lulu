@@ -6,7 +6,7 @@ from dash.dependencies import Input, Output, State
 import plotly.graph_objects as go
 import numpy as np
 from utility.form_group import formGroup
-
+from datetime import datetime as dt
 import skrf as rf
 from skrf.time import detect_span
 
@@ -48,6 +48,14 @@ app.layout = html.Div(
     )
 def update_output_div_case_name_row(input_value):
     return (input_value)
+
+
+@app.callback(
+    Output('dd-output-container', 'children'),
+    Input('demo-dropdown', 'value')
+)
+def update_output(value):
+    return f'You have selected {value}'
 
 
 if __name__ == "__main__":
