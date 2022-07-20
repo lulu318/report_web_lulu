@@ -6,7 +6,9 @@ import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output, State
 import plotly.graph_objects as go
 import numpy as np
+import datetime
 
+year_list = [i for i in range(109, int(datetime.datetime.today().year)-1911+3)]
 
 email_input = dbc.Input(
     type="email",
@@ -46,18 +48,11 @@ def label_name(label_text, _html_for, **kwargs):
     return label
 
 
-def dropdown_item(_id, items:list, label_name, color):
-    dropdown = dbc.DropdownMenu(
-        items,
-        id=_id,
-        label=label_name,
-        className="m-1",
-        toggle_style={
-            "textTransform": "uppercase",
+def dropdown_item(_id, items: list, color):
+    dropdown = dcc.Dropdown(
+        items, items[0], id=_id, style={
             "background": color,
-        },
-        toggleClassName="fst-italic border border-dark",
-    )
+        })
     return dropdown
 
 
@@ -91,12 +86,15 @@ def radio_items_label_name(label_text, _id, _options: list):
     )
     return col
 
-# def dropdown_items_label_name(_id, items:list, label_name, color):
-#     col = dbc.Col(
-#         [
-#             label_name(label_text, _id),
-#             radio_items(_id, _options),
-#         ],
-#         width=3
-#     )
-#     return col
+
+def dropdown_items_label_name_period(_id, items: list, label_text, color: list):
+    col = dbc.Col(
+        [
+            label_name(label_text, _id),
+            dbc.Row([dropdown_item(f"{_id}_year", items[0], color[0] ),dbc.InputGroupText("年"),
+                     dropdown_item(f"{_id}_period", items[1], color[1]),dbc.InputGroupText("期"), ])
+
+        ],
+        width=3
+    )
+    return col

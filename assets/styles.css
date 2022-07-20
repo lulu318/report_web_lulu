@@ -159,8 +159,7 @@ li {
   padding: 30px;
   margin-bottom: 25px;
   border-radius: 1px;
-  background: #4380acfd;##3d67a4fd;
-
+  background: #4380acfd;
   color: #ffffff;
 }
 .full-view-link {
@@ -207,6 +206,10 @@ li {
   height: 30px;
   width: auto;
   margin: 25px 25px;
+}
+
+.Select-value-label{
+  color: white !important;
 }
 
 a:link {

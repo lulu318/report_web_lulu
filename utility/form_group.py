@@ -11,7 +11,7 @@ import numpy as np
 import datetime
 
 from pyparsing import White
-from utility.utils import email_input, password_input, label_name, input_frame, input_frame_label_name, radio_items_label_name, radio_items
+from utility.utils import email_input, password_input, label_name, input_frame, input_frame_label_name, radio_items_label_name, radio_items, dropdown_items_label_name_period, year_list
 
 
 def get_date():
@@ -54,13 +54,7 @@ formGroup = html.Div(
                                             "PR年遞減率", "pr_annual_decline_rate", "%"),
                                         input_frame_label_name(
                                             "保固費年遞增率", "warranty_annual_increment_rate", "%"),
-                                        html.Div([
-                                            dcc.Dropdown(
-                                                ['NYC', 'MTL', 'SF'], 'NYC', id='demo-dropdown',style={
-                                                "background": "#74b9ff",
-                                            }),
-                                            html.Div(id='dd-output-container')
-                                        ])
+                                        dropdown_items_label_name_period("estimated_calendar_year", [year_list, [1,2]], "預估掛表年度", ["#4682B4", "#4682B4"])
                                     ],
                                     className="mb-3",
                                 ),
