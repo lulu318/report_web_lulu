@@ -54,24 +54,10 @@ formGroup = html.Div(
                                             "PR年遞減率", "pr_annual_decline_rate", "%"),
                                         input_frame_label_name(
                                             "保固費年遞增率", "warranty_annual_increment_rate", "%"),
-                                        dbc.DropdownMenu(
-                                            [
-                                                dbc.DropdownMenuItem("Item 1"),
-                                                dbc.DropdownMenuItem("Item 2"),
-                                                dbc.DropdownMenuItem("Item 3"),
-                                            ],
-                                            label="Custom",
-                                            className="m-1",
-                                            toggle_style={
-                                                "background": "#4a69bd",
-                                            },
-                                            toggleClassName="fst-italic border border-dark",
-                                        ),
                                         html.Div([
                                             dcc.Dropdown(
                                                 ['NYC', 'MTL', 'SF'], 'NYC', id='demo-dropdown',style={
-                                                "background": "#4a69bd",
-                                                "color": "#FFFFFF"
+                                                "background": "#74b9ff",
                                             }),
                                             html.Div(id='dd-output-container')
                                         ])
