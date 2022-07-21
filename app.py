@@ -31,7 +31,7 @@ app.layout = html.Div(
                         html.H3(
                             className="product",
                             children=[
-                                "投資試算表"
+                                "太陽光電發電系統"
                             ],
                         ),
                         formGroup,
@@ -59,7 +59,7 @@ def regional_bonus(value):
 
 @app.callback(
     Output("modal", "is_open"),
-    [Input("open", "n_clicks"), Input("close", "n_clicks")],
+    [Input("open_project_costs", "n_clicks"), Input("close", "n_clicks")],
     [State("modal", "is_open")],
 )
 def toggle_modal(n1, n2, is_open):

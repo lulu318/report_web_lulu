@@ -11,8 +11,10 @@ import numpy as np
 import datetime
 
 from pyparsing import White
-from utility.utils import form_func, year_list, modal__
+from utility.utils import form_func, year_list, feature_fuc
+from utility.table import df
 
+table = feature_fuc.table_dataframe(df)
 
 def get_date():
     # Function to check for dynamic date change, for testing purpose only
@@ -55,7 +57,7 @@ formGroup = html.Div(
                                         form_func.input_frame_label_name(
                                             "保固費年遞增率", "warranty_annual_increment_rate", "%"),
                                         form_func.dropdown_items_label_name_period("estimated_calendar_year", [year_list, [
-                                                                         1, 2]], "預估掛表年度", ["#4682B4", "#4682B4"])
+                                            1, 2]], "預估掛表年度", ["#4682B4", "#4682B4"])
                                     ],
                                     className="mb-3",
                                 ),
@@ -102,7 +104,7 @@ formGroup = html.Div(
                                 dbc.Row(
                                     [
                                         form_func.dropdown_items_label_name_period("annual_wholesale_rate", [year_list, [
-                                                                         1, 2]], "躉購費率年度↓", ["#4682B4", "#4682B4"]),
+                                            1, 2]], "躉購費率年度↓", ["#4682B4", "#4682B4"]),
                                         form_func.input_frame_label_name(
                                             "隔年費率降幅預估", "estimated_rate_reduction_next_year", "%"),
                                         form_func.dropdown_items_label_name(
@@ -162,7 +164,7 @@ formGroup = html.Div(
                         dbc.Form(
                             [
                                 dbc.Row(
-                                    [modal__],
+                                    [form_func.modal_table("工程費用說明", "header", df), table],
                                     className="m-3",)
                             ]
                         )

@@ -10,6 +10,7 @@ import datetime
 
 year_list = [i for i in range(109, int(datetime.datetime.today().year)-1911+3)]
 
+
 class feature_fuc:
     @staticmethod
     def radio_items(_id, _options: list):
@@ -23,24 +24,21 @@ class feature_fuc:
         )
         return items
 
-
     @staticmethod
     def group_text(frame, text):
         text = dbc.InputGroup([frame, text])
         return text
 
-
     @staticmethod
     def input_frame(_id, _placeholder="Type something...", _type="number", **kwargs):
-        frame = dbc.Input(id=_id, placeholder=_placeholder, type=_type, **kwargs)
+        frame = dbc.Input(id=_id, placeholder=_placeholder,
+                          type=_type, **kwargs)
         return frame
-
 
     @staticmethod
     def label_name(label_text, _html_for, **kwargs):
         label = dbc.Label(label_text, html_for=_html_for, **kwargs)
         return label
-
 
     @staticmethod
     def dropdown_item(_id, items: list, color):
@@ -49,6 +47,16 @@ class feature_fuc:
                 "background": color,
             })
         return dropdown
+
+    def table_dataframe(df):
+        table = dbc.Table.from_dataframe(
+            df,
+            striped=True,
+            bordered=True,
+            hover=True,
+        )
+        return table
+
 
 class form_func:
     @staticmethod
@@ -71,7 +79,6 @@ class form_func:
         )
         return col
 
-
     @staticmethod
     def radio_items_label_name(label_text, _id, _options: list):
         col = dbc.Col(
@@ -82,7 +89,6 @@ class form_func:
             width=3
         )
         return col
-
 
     @staticmethod
     def dropdown_items_label_name(_id, items: list, label_text, color):
@@ -95,7 +101,6 @@ class form_func:
             width=3
         )
         return col
-
 
     @staticmethod
     def dropdown_items_label_name_period(_id, items: list, label_text, color: list):
@@ -115,7 +120,6 @@ class form_func:
         )
         return col
 
-
     @staticmethod
     def label_name_text(_id, label_text, text_id, unit):
         col = dbc.Col(
@@ -124,11 +128,40 @@ class form_func:
                 dbc.Row([
                     html.H5(id=text_id),
                     dbc.InputGroupText(unit)
-                    ])
+                ])
             ],
             width=3
         )
         return col
+
+    def modal_table(button_name, header, df):
+        modal = html.Div(
+            [
+                dbc.Button(button_name, id="open_project_costs",
+                           className="me-3", n_clicks=0),
+                dbc.Modal(
+                    [
+                        dbc.ModalHeader(
+                            dbc.ModalTitle(
+                                html.H3(header),
+                                className="m-3"
+                            )
+                        ),
+                        dbc.ModalBody([feature_fuc.table_dataframe(df)]),
+                        dbc.ModalFooter(
+                            dbc.Button(
+                                "Close", id="close", className="ms-auto", n_clicks=0
+                            )
+                        ),
+                    ],
+                    size="xl",
+                    id="modal",
+                    is_open=False,
+                    scrollable=True,
+                ),
+            ]
+        )
+        return modal
 
 
 class callback_fuc:
@@ -140,24 +173,3 @@ class callback_fuc:
         elif area == "台東":
             bonus = 8
         return bonus
-
-
-modal__ = html.Div(
-    [
-        dbc.Button("Open modal", id="open", n_clicks=0),
-        dbc.Modal(
-            [
-                dbc.ModalHeader(dbc.ModalTitle("Header")),
-                dbc.ModalBody("This is the content of the modal"),
-                dbc.ModalFooter(
-                    dbc.Button(
-                        "Close", id="close", className="ms-auto", n_clicks=0
-                    )
-                ),
-            ],
-            size="xl",
-            id="modal",
-            is_open=False,
-        ),
-    ]
-)
