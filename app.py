@@ -12,6 +12,8 @@ import skrf as rf
 from skrf.time import detect_span
 from utility.utils import callback_fuc
 external_stylesheets = [
+    #dbc.themes.BOOTSTRAP,
+    # #"https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css",
     "https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css",
     "https://codepen.io/chriddyp/pen/bWLwgP.css",
 ]

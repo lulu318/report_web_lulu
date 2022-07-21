@@ -145,7 +145,8 @@ class form_func:
                             dbc.ModalTitle(
                                 html.H3(header),
                                 className="m-3"
-                            )
+                            ),
+                            close_button=False,
                         ),
                         dbc.ModalBody([feature_fuc.table_dataframe(df)]),
                         dbc.ModalFooter(
