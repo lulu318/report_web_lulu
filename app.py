@@ -59,15 +59,30 @@ app.layout = html.Div(
 def regional_bonus(value):
     return callback_fuc.regional_bonus(value)
 
-@app.callback(
-    Output("modal", "is_open"),
-    [Input("open_project_costs", "n_clicks"), Input("close", "n_clicks")],
-    [State("modal", "is_open")],
-)
+# modal_table
 def toggle_modal(n1, n2, is_open):
     if n1 or n2:
         return not is_open
     return is_open
 
+app.callback(
+    Output("modal_project_costs", "is_open"),
+    [Input("open_project_costs", "n_clicks"), Input("close_project_costs", "n_clicks")],
+    [State("modal_project_costs", "is_open")],
+)(toggle_modal)
+
+app.callback(
+    Output("modal_customer_offers", "is_open"),
+    [Input("open_customer_offers", "n_clicks"), Input("close_customer_offers", "n_clicks")],
+    [State("modal_customer_offers", "is_open")],
+)(toggle_modal)
+
+app.callback(
+    Output("modal_warranty_cost", "is_open"),
+    [Input("open_warranty_cost", "n_clicks"), Input("close_warranty_cost", "n_clicks")],
+    [State("modal_warranty_cost", "is_open")],
+)(toggle_modal)
+
+
 if __name__ == "__main__":
-    app.run_server(debug=False)
+    app.run_server(debug=True)

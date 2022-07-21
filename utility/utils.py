@@ -134,11 +134,11 @@ class form_func:
         )
         return col
 
-    def modal_table(button_name, header, df):
+    def modal_table(_id, button_name, header, df):
         modal = html.Div(
             [
-                dbc.Button(button_name, id="open_project_costs",
-                           className="me-3", n_clicks=0),
+                dbc.Button(button_name, id=f"open_{_id}",
+                           className="m-3", n_clicks=0),
                 dbc.Modal(
                     [
                         dbc.ModalHeader(
@@ -151,12 +151,12 @@ class form_func:
                         dbc.ModalBody([feature_fuc.table_dataframe(df)]),
                         dbc.ModalFooter(
                             dbc.Button(
-                                "Close", id="close", className="ms-auto", n_clicks=0
+                                "Close", id=f"close_{_id}", className="ms-auto", n_clicks=0
                             )
                         ),
                     ],
                     size="xl",
-                    id="modal",
+                    id=f"modal_{_id}",
                     is_open=False,
                     scrollable=True,
                 ),

@@ -12,9 +12,10 @@ import datetime
 
 from pyparsing import White
 from utility.utils import form_func, year_list, feature_fuc
-from utility.table import df
+from utility.table import project_costs_df, customer_offers_df, warranty_cost_df
 
-table = feature_fuc.table_dataframe(df)
+table = feature_fuc.table_dataframe(project_costs_df)
+
 
 def get_date():
     # Function to check for dynamic date change, for testing purpose only
@@ -164,7 +165,14 @@ formGroup = html.Div(
                         dbc.Form(
                             [
                                 dbc.Row(
-                                    [form_func.modal_table("工程費用說明", "header", df), table],
+                                    [
+                                        form_func.modal_table(
+                                            "project_costs", "工程費用說明", "header", project_costs_df),
+                                        form_func.modal_table(
+                                            "customer_offers", "客戶優惠專案", "header", customer_offers_df),
+                                        form_func.modal_table(
+                                            "warranty_cost", "保固費用分析", "header", warranty_cost_df),
+                                        table],
                                     className="m-3",)
                             ]
                         )
