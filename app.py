@@ -12,7 +12,7 @@ import skrf as rf
 from skrf.time import detect_span
 from utility.utils import callback_fuc
 external_stylesheets = [
-    #dbc.themes.BOOTSTRAP,
+    # dbc.themes.BOOTSTRAP,
     # #"https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css",
     "https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css",
     "https://codepen.io/chriddyp/pen/bWLwgP.css",
@@ -59,27 +59,68 @@ app.layout = html.Div(
 def regional_bonus(value):
     return callback_fuc.regional_bonus(value)
 
+
+# table result
+
+@app.callback(
+    Output('customer_discount_program_percent_output', 'children'),
+    Input('customer_offers', 'value')
+)
+def customer_discount_program_percent(customer_offers):
+    return callback_fuc.customer_discount_program_percent(customer_offers)
+
+
+@app.callback(
+    Output('actual_expenses_percent_output', 'children'),
+    [Input('program_type', 'value'), Input('bank_loan_ratio', 'value')]
+)
+def actual_expenses_percent(program_type, bank_loan_ratio):
+    return callback_fuc.actual_expenses_percent(program_type, bank_loan_ratio)
+
+
+
+@app.callback(
+    Output('bank_loan_percent_output', 'children'),
+    [Input('program_type', 'value'), Input('bank_loan_ratio', 'value')]
+)
+def bank_loan_percent(program_type, bank_loan_ratio):
+    return callback_fuc.bank_loan_percent(program_type, bank_loan_ratio)
+
+
+@app.callback(
+    Output('tax_free_construction_costs_output', 'children'),
+    [Input('construction_cost', 'value'), Input('other_costs', 'value')]
+)
+def tax_free_construction_costs(construction, other):
+    return callback_fuc.tax_free_construction_costs(construction, other)
+
+
 # modal_table
+
 def toggle_modal(n1, n2, is_open):
     if n1 or n2:
         return not is_open
     return is_open
 
-app.callback(
-    Output("modal_project_costs", "is_open"),
-    [Input("open_project_costs", "n_clicks"), Input("close_project_costs", "n_clicks")],
-    [State("modal_project_costs", "is_open")],
-)(toggle_modal)
+
+# app.callback(
+#     Output("modal_project_costs", "is_open"),
+#     [Input("open_project_costs", "n_clicks"),
+#      Input("close_project_costs", "n_clicks")],
+#     [State("modal_project_costs", "is_open")],
+# )(toggle_modal)
 
 app.callback(
     Output("modal_customer_offers", "is_open"),
-    [Input("open_customer_offers", "n_clicks"), Input("close_customer_offers", "n_clicks")],
+    [Input("open_customer_offers", "n_clicks"),
+     Input("close_customer_offers", "n_clicks")],
     [State("modal_customer_offers", "is_open")],
 )(toggle_modal)
 
 app.callback(
     Output("modal_warranty_cost", "is_open"),
-    [Input("open_warranty_cost", "n_clicks"), Input("close_warranty_cost", "n_clicks")],
+    [Input("open_warranty_cost", "n_clicks"),
+     Input("close_warranty_cost", "n_clicks")],
     [State("modal_warranty_cost", "is_open")],
 )(toggle_modal)
 

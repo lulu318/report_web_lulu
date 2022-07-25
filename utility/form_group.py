@@ -14,7 +14,8 @@ from pyparsing import White
 from utility.utils import form_func, year_list, feature_fuc
 from utility.table import project_costs_df, customer_offers_df, warranty_cost_df
 
-table = feature_fuc.table_dataframe(project_costs_df)
+# table1 = feature_fuc.table_dataframe(customer_offers_df)
+# table = feature_fuc.table_dataframe(project_costs_df("tax_free_construction_costs_output"))
 
 
 def get_date():
@@ -166,13 +167,18 @@ formGroup = html.Div(
                             [
                                 dbc.Row(
                                     [
+                                        # form_func.modal_table(
+                                        #     "project_costs", "工程費用說明", "工程費用說明", project_costs_df("tax_free_construction_costs_output")),
                                         form_func.modal_table(
-                                            "project_costs", "工程費用說明", "header", project_costs_df),
+                                            "customer_offers", "客戶優惠專案", "客戶優惠專案", customer_offers_df),
                                         form_func.modal_table(
-                                            "customer_offers", "客戶優惠專案", "header", customer_offers_df),
-                                        form_func.modal_table(
-                                            "warranty_cost", "保固費用分析", "header", warranty_cost_df),
-                                        table],
+                                            "warranty_cost", "保固費用分析", "保固費用分析", warranty_cost_df),
+                                        feature_fuc.table_dataframe(
+                                            project_costs_df(
+                                                "customer_discount_program_percent_output", "actual_expenses_percent_output","bank_loan_percent_output", "tax_free_construction_costs_output")
+                                        ),
+                                        # feature_fuc.result("bank_loan_percent_output")
+                                    ],
                                     className="m-3",)
                             ]
                         )
