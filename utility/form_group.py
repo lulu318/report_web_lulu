@@ -49,6 +49,8 @@ formGroup = html.Div(
                                         form_func.input_frame_label_name(
                                             "年租金", "annual_rent", "%"),
                                         form_func.input_frame_label_name(
+                                            "年租金", "annual_rent_money", "$"),
+                                        form_func.input_frame_label_name(
                                             "預估初年系統PR值", "estimated_first_year_system", "%"),
                                         form_func.radio_items_label_name("期末是否拆除↓", "whether_to_remove", [
                                             {"label": "是", "value": 1}, {"label": "否", "value": 2}]),
@@ -114,7 +116,7 @@ formGroup = html.Div(
                                                         "annual_wholesale_rate_year", year_list, "#4682B4"),
                                                     dbc.InputGroupText("年"),
                                                     feature_fuc.dropdown_item(
-                                                        "annual_wholesale_rate_period", [1, 2],"#4682B4"),
+                                                        "annual_wholesale_rate_period", [1, 2], "#4682B4"),
                                                     dbc.InputGroupText("期"), ])
 
                                             ],
@@ -180,56 +182,47 @@ formGroup = html.Div(
                         dbc.Alert([html.H5("投資報酬分析")], color="primary"),
                         dbc.Form(
                             [
-                                dbc.Row(
+                                dbc.Tabs(
                                     [
-                                        # html.Div(
-                                        #     id='shape_output'),
-                                        # html.H5('aaaa'),
-                                        form_func.modal_table(
-                                            "project_costs", "工程費用說明", "工程費用說明",  project_costs_df(
+                                        dbc.Tab(form_func.tab("工程費用說明", project_costs_df(
                                                 "bank_loan_fee_percent_output", "actual_expenses_percent_output", "customer_discount_program_percent_output", "bank_loan_percent_output",
                                                 "loan_annual_interest_rate_percent_output", "loan_term_percent_output", "loan_fee_percent_output", "pay_after_loan_percent_output",
 
                                                 "tax_free_construction_costs_output", "bank_loan_fee_costs_output", "actual_expenses_costs_output", "total_project_costs_output",
                                                 "actual_total_expenses_costs_output", 'customer_discount_program_costs_output', 'bank_loan_costs_output', "annual_loan_repayment_amount_costs_output",
-                                                "taipower_line_subsidy_costs_output", "loan_fee_costs_output", "pay_after_loan_costs_output")),
-                                        form_func.modal_table(
-                                            "customer_offers", "客戶優惠專案", "客戶優惠專案", customer_offers_df("customer_offers_costs_output")),
-                                        form_func.modal_table(
-                                            "warranty_cost", "保固費用分析", "保固費用分析", warranty_cost_df("illustrate_7years_output", "illustrate_20years_output", "scale_7years_output", "scale_20years_output",
-                                                                                                  "amount_6years_output", "amount_7years_output", "amount_20years_output", "amount_total_output")),
-                                        form_func.modal_table(
-                                            "operating_expense", "營運費用分析", "營運費用分析", operating_expense_df("illustrate_cleaning_fee_water_output", "illustrate_property_insurance_costs_output",
-                                                                                                          "scale_cleaning_fee_water_output", "scale_property_insurance_costs_output", "scale_installation_space_cost_output", "scale_module_recycling_fund_output", "scale_removal_fee_output",
-                                                                                                          "amount_cleaning_fee_water_output", "amount_property_insurance_costs_output", "amount_installation_space_cost_output", "amount_operating_expense_total_output", "amount_module_recycling_fund_output", "amount_removal_fee_output")),
-                                        form_func.modal_table(
-                                            "wholesale_rate", "躉售費率", "躉售費率", wholesale_rate_df()),
-                                        form_func.modal_table(
-                                            "return_on_investment", "投資報酬分析表", "投資報酬分析表", return_on_investment_df(*[f"ese_{num}_output" for num in range(1, 21)], "ese_sum", "ese_average",
-                                                                                                                  *[f"eis_{num}_output" for num in range(1, 21)], "eis_sum", "eis_average",
-                                                                                                                  *[f"lds_{num}_output" for num in range(1, 21)], "lds_sum", "lds_average")),
+                                                "taipower_line_subsidy_ costs_output", "loan_fee_costs_output", "pay_after_loan_costs_output")),
+                                                label="工程費用說明", label_style={"font-size": "1.3em"}),
+                                        dbc.Tab(form_func.tab("客戶優惠專案", customer_offers_df("customer_offers_costs_output")),
+                                                label="客戶優惠專案", label_style={"font-size": "1.3em"}),
+                                        dbc.Tab(form_func.tab("保固費用分析", warranty_cost_df("illustrate_7years_output", "illustrate_20years_output", "scale_7years_output", "scale_20years_output",
+                                                                                         "amount_6years_output", "amount_7years_output", "amount_20years_output", "amount_total_output")),
+                                                label="保固費用分析", label_style={"font-size": "1.3em"}),
+                                        dbc.Tab(form_func.tab("營運費用分析", operating_expense_df("illustrate_cleaning_fee_water_output", "illustrate_property_insurance_costs_output",
+                                                                                             "scale_cleaning_fee_water_output", "scale_property_insurance_costs_output", "scale_installation_space_cost_output", "scale_module_recycling_fund_output", "scale_removal_fee_output",
+                                                                                             "amount_cleaning_fee_water_output", "amount_property_insurance_costs_output", "amount_installation_space_cost_output", "amount_operating_expense_total_output", "amount_module_recycling_fund_output", "amount_removal_fee_output")),
+                                                label="營運費用分析", label_style={"font-size": "1.3em"}),
+                                        dbc.Tab(form_func.tab("躉售費率", wholesale_rate_df(*[f"fit_{num}_output" for num in range(1, 7)],
+                                                                                        *[f"addition_{num}_output" for num in range(1, 7)],
+                                                                                        *[f"plus_rate_total_{num}_output" for num in range(1, 7)],
+                                                                                        *[f"electricity_sales_rate_{num}_output" for num in range(1, 7)])),
+                                                label="躉售費率", label_style={"font-size": "1.3em"}),
+                                        dbc.Tab(form_func.tab("投資報酬分析表", return_on_investment_df(*[f"ese_{num}_output" for num in range(1, 21)], "ese_sum_output", "ese_average_output",
+                                                                                                 *[f"eis_{num}_output" for num in range(1, 21)], "eis_sum_output", "eis_average_output",
+                                                                                                 *[f"lds_{num}_output" for num in range(1, 21)], "lds_sum_output",
+                                                                                                 *[f"cdp_{num}_output" for num in range(1, 6)], "cdp_sum_output",
+                                                                                                 *[f"warranty_{num}_output" for num in range(1, 21)], "warranty_sum_output",
+                                                                                                 *[f"oe_{num}_output" for num in range(1, 21)], "oe_sum_output",
+                                                                                                 *[f"total_r_{num}_output" for num in range(0, 21)], "total_r_sum_output",
+                                                                                                 *[f"cash_flow_{num}_output" for num in range(0, 21)])),
+                                                label="投資報酬分析表", label_style={"font-size": "1.3em"}),
+                                    ]
+                                )
+                            ],
+                            className='m-1',
 
-                                        # form_func.modal_table(
-                                        # "return_on_investment", "投資報酬分析表", "投資報酬分析表", return_on_investment_df("ese_1_output", "ese_2_output", "ese_3_output", "ese_4_output", "ese_5_output", "ese_6_output", "ese_7_output", "ese_8_output", "ese_9_output", "ese_10_output",
-                                        #                                                                       "ese_11_output", "ese_12_output", "ese_13_output", "ese_14_output", "ese_15_output", "ese_16_output", "ese_17_output", "ese_18_output", "ese_19_output", "ese_20_output", "ese_sum_output", "ese_average_output")),
-
-                                        # feature_fuc.table_dataframe(
-                                        #     project_costs_df(
-                                        #         "bank_loan_fee_percent_output", "actual_expenses_percent_output", "customer_discount_program_percent_output", "bank_loan_percent_output",
-                                        #         "loan_annual_interest_rate_percent_output", "loan_term_percent_output", "loan_fee_percent_output", "pay_after_loan_percent_output",
-
-                                        #         "tax_free_construction_costs_output", "bank_loan_fee_costs_output", "actual_expenses_costs_output", "total_project_costs_output",
-                                        #         "actual_total_expenses_costs_output", 'customer_discount_program_costs_output', 'bank_loan_costs_output', "annual_loan_repayment_amount_costs_output",
-                                        #         "taipower_line_subsidy_costs_output", "loan_fee_costs_output", "pay_after_loan_costs_output")
-                                        # ),
-                                        # html.H5('aaaa'),
-                                        # feature_fuc.result("bank_loan_costs_output")
-                                    ],
-                                    className="m-3",)
-                            ]
-                        )
-                    ]
-                )
+                        ),
+                    ], className='m-1',
+                ),
             ],
             flush=True,
         ),

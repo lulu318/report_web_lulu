@@ -1,5 +1,6 @@
 from cmath import nan
 from html.entities import html5
+from lzma import CHECK_SHA256
 import pandas as pd
 from enum import auto
 import dash
@@ -29,9 +30,20 @@ _I33_ = 0.0413
 _L29_ = 0.0387  # _L29~ L35
 _M29_ = 0.1934  # _M29~ M34
 _H34_ = 0.1356  # H29~H35
+_F18_ = 6
+_C25_ = 6
 
 
 class feature_fuc:
+    def to_currency_format(input, num = None):
+        input = float(input)
+        if num is None:
+            res = f'{input:,}'
+        else:
+            res = f'{input:,.{num}f}'
+        return res
+
+
     def find_first_number(function_name):
         pattern_float = re.compile(r'[0-9]+\.[0-9]+')
         if pattern_float.findall(function_name)[0]:
@@ -42,7 +54,11 @@ class feature_fuc:
         return res
 
     def result(value_id):
-        res = html.H5(id=value_id)
+        res = html.H5(id=value_id, style={'text-align': 'right'})
+        return res
+    
+    def result_type(value):
+        res = html.H5(value, style={'text-align': 'right'})
         return res
 
     @staticmethod
@@ -100,7 +116,17 @@ class feature_fuc:
 
 
 class form_func:
-    @staticmethod
+    def tab(header, df):
+        tab = dbc.Card([
+            # dbc.CardHeader(html.H5(header)),
+            dbc.CardBody(
+                feature_fuc.table_dataframe(df),
+            )],
+            className="mt-3",
+        )
+        return tab
+
+    @ staticmethod
     def input_frame_label_name(label_text, _id, unit=None, _width=3, type_="number", _disabled=False):
         if unit:
             _group = feature_fuc.group_text(
@@ -120,7 +146,7 @@ class form_func:
         )
         return col
 
-    @staticmethod
+    @ staticmethod
     def radio_items_label_name(label_text, _id, _options: list):
         col = dbc.Col(
             [
@@ -131,7 +157,7 @@ class form_func:
         )
         return col
 
-    @staticmethod
+    @ staticmethod
     def dropdown_items_label_name(_id, items: list, label_text, color):
         col = dbc.Col(
             [
@@ -143,7 +169,7 @@ class form_func:
         )
         return col
 
-    @staticmethod
+    @ staticmethod
     def dropdown_items_label_name_period(_id, items: list, label_text, color: list):
         col = dbc.Col(
             [
@@ -161,7 +187,7 @@ class form_func:
         )
         return col
 
-    @staticmethod
+    @ staticmethod
     def label_name_text(_id, label_text, text_id, unit):
         col = dbc.Col(
             [
@@ -209,7 +235,7 @@ class form_func:
 class callback_fuc:
     # area_output
     # _I7
-    @staticmethod
+    @ staticmethod
     def regional_bonus(area):
         bonus = 0
         if area == "北部地區":
@@ -220,7 +246,7 @@ class callback_fuc:
 
     # 投資試算表
     # C5、C10
-    @staticmethod
+    @ staticmethod
     def bank_loan_percent(program_type, bank_loan_ratio):
         # program_type = feature_fuc.judge_is_none(program_type)
         bank_loan_ratio = feature_fuc.judge_is_none(bank_loan_ratio)
@@ -232,13 +258,13 @@ class callback_fuc:
         return res
 
     # C9
-    @staticmethod
+    @ staticmethod
     def customer_discount_program_percent(customer_offers):
         customer_offers = feature_fuc.judge_is_none(customer_offers)
         return customer_offers
 
     # C6
-    @staticmethod
+    @ staticmethod
     def actual_expenses_percent(program_type, bank_loan_ratio):
         program_type = feature_fuc.judge_is_none(program_type)
         bank_loan_ratio = feature_fuc.judge_is_none(bank_loan_ratio)
@@ -248,7 +274,7 @@ class callback_fuc:
 
     # C11
 
-    @staticmethod
+    @ staticmethod
     def loan_annual_interest_rate_percent(program_type, bank_loan_rate):
         bank_loan_rate = feature_fuc.judge_is_none(bank_loan_rate)
         res = bank_loan_rate
@@ -257,7 +283,7 @@ class callback_fuc:
         return res
 
     # C12
-    @staticmethod
+    @ staticmethod
     def loan_term_percent(bank_loan_term, program_type, bank_loan_ratio):
         bank_loan_term = feature_fuc.judge_is_none(bank_loan_term)
         res = bank_loan_term
@@ -266,7 +292,7 @@ class callback_fuc:
         return res
 
     # C15
-    @staticmethod
+    @ staticmethod
     def loan_fee_percent(program_type):
         res = 0
         if program_type == "自付，貸款":
@@ -274,7 +300,7 @@ class callback_fuc:
         return res
 
     # C16
-    @staticmethod
+    @ staticmethod
     def pay_after_loan_percent(customer_offers, bank_loan_ratio, program_type):
         # C4-C9-C10
         res = 0
@@ -286,9 +312,9 @@ class callback_fuc:
         return res
 
     # D4
-    @staticmethod
+    @ staticmethod
     def tax_free_construction_costs(construction_cost, other_costs):
-        # 資料輸入!D7+資料輸入!D8
+        # 資料輸入!_D7+資料輸入!_D8
         res = 0
         construction = feature_fuc.judge_is_none(construction_cost)
         other = feature_fuc.judge_is_none(other_costs)
@@ -296,7 +322,7 @@ class callback_fuc:
         return res
 
     # D5
-    @staticmethod
+    @ staticmethod
     def bank_loan_fee_costs(construction_cost, other_costs, program_type, bank_loan_ratio):
         # D4*C5
         res = 0
@@ -307,7 +333,7 @@ class callback_fuc:
         return res
 
     # D6
-    @staticmethod
+    @ staticmethod
     def actual_expenses_costs(construction_cost, other_costs, program_type, bank_loan_ratio):
         # D6 = D4-D5
         res = 0
@@ -320,7 +346,7 @@ class callback_fuc:
 
     # D7
 
-    @staticmethod
+    @ staticmethod
     def total_project_costs(system_capacity, construction_cost, other_costs):
         # "=ROUND(D4*H3,0)"
         res = 0
@@ -332,7 +358,7 @@ class callback_fuc:
 
     # D8
 
-    @staticmethod
+    @ staticmethod
     def actual_total_expenses_costs(system_capacity, construction_cost, other_costs, program_type, bank_loan_ratio):
         # = "=ROUND(D6*H3,0)"
         res = 0
@@ -343,7 +369,7 @@ class callback_fuc:
         return res
 
     # D9
-    @staticmethod
+    @ staticmethod
     def customer_discount_program_costs(construction_cost, other_costs, system_capacity, customer_offers):
         # = "=ROUND(D4*H3*C9,0)"
         res = 0
@@ -483,83 +509,95 @@ class callback_fuc:
     def illustrate_5years():
         # '="售電收入"&C24*100&"%"'
         res = callback_fuc.scale_5years()
-        return f"售電收入{res}"
+        return res
 
     # B25
 
     def illustrate_6years():
         # '="售電收入"&C25*100&"%"'
         res = callback_fuc.scale_6years()
-        return f"售電收入{res}"
+        return res
 
     # B26
     def illustrate_7years(warranty_annual_increment_rate):
         # '="售電收入"&C26*100&"%"'
         res = callback_fuc.scale_7years(warranty_annual_increment_rate)
-        return f"售電收入{res}"
+        return res
 
     # B28
     def illustrate_20years(warranty_annual_increment_rate):
         # '="售電收入"&C28*100&"%"'
         res = callback_fuc.scale_20years(warranty_annual_increment_rate)
-        return f"售電收入{res}"
+        return res
 
     # C24
     def scale_5years():
         # "0%"
         res = 0
-        return f" {res} % "
+        return res
 
     # C25
     def scale_6years():
         # "6%"
-        res = 6
-        return f" {res} % "
+        res = _C25_
+        return res
 
     # C26
     def scale_7years(warranty_annual_increment_rate):
         # '=C25+資料輸入!D15'
+        res = 0
         D15 = feature_fuc.judge_is_none(warranty_annual_increment_rate)
-        res = feature_fuc.find_first_number(callback_fuc.scale_6years()) + D15
-        return f" {res} % "
+        res = _C25_ + D15
+        return res
 
     # C28
     def scale_20years(warranty_annual_increment_rate):
         # "=C25+資料輸入!D15*14"
         D15 = feature_fuc.judge_is_none(warranty_annual_increment_rate)
-        res = feature_fuc.find_first_number(
-            callback_fuc.scale_6years()) + D15*14
-        return f" {res} % "
+        res = _C25_ + D15*14
+        return res
 
     # D24
     def amount_5years():
-        # "0%"
+        # "0"
         res = 0
-        return f" {res} % "
+        return res
 
     # D25
-    def amount_6years():
+    def amount_6years(warranty_annual_increment_rate, shape, roof_type_grid_connection_engineering, module_recycling_fund, installed_kw, system_capacity, annual_wholesale_rate_year, annual_wholesale_rate_period,
+                      area, strengthen_power_grid, high_efficiency_bonus, fishing_environment, agriculture_fishing_green_energy, estimated_rate_reduction_next_year, estimated_sunshine, estimated_first_year_system, pr_annual_decline_rate):
         # '=-K18'
-        res = 0
-        return f" {res} % "
+        K18 = callback_fuc.warranty_fee(6, warranty_annual_increment_rate, shape, roof_type_grid_connection_engineering, module_recycling_fund, installed_kw, system_capacity, annual_wholesale_rate_year, annual_wholesale_rate_period,
+                                        area, strengthen_power_grid, high_efficiency_bonus, fishing_environment, agriculture_fishing_green_energy, estimated_rate_reduction_next_year, estimated_sunshine, estimated_first_year_system, pr_annual_decline_rate)
+        res = -K18
+        return res
 
     # D26
-    def amount_7years():
-        # '=-K19''
-        res = 0
-        return f" {res} % "
+    def amount_7years(warranty_annual_increment_rate, shape, roof_type_grid_connection_engineering, module_recycling_fund, installed_kw, system_capacity, annual_wholesale_rate_year, annual_wholesale_rate_period,
+                      area, strengthen_power_grid, high_efficiency_bonus, fishing_environment, agriculture_fishing_green_energy, estimated_rate_reduction_next_year, estimated_sunshine, estimated_first_year_system, pr_annual_decline_rate):
+        # '=-K19'
+        K19 = callback_fuc.warranty_fee(7, warranty_annual_increment_rate, shape, roof_type_grid_connection_engineering, module_recycling_fund, installed_kw, system_capacity, annual_wholesale_rate_year, annual_wholesale_rate_period,
+                                        area, strengthen_power_grid, high_efficiency_bonus, fishing_environment, agriculture_fishing_green_energy, estimated_rate_reduction_next_year, estimated_sunshine, estimated_first_year_system, pr_annual_decline_rate)
+        res = -K19
+        return res
 
     # D28
-    def amount_20years():
-        # "=-K32"
-        res = 0
-        return f" {res} % "
+    def amount_20years(warranty_annual_increment_rate, shape, roof_type_grid_connection_engineering, module_recycling_fund, installed_kw, system_capacity, annual_wholesale_rate_year, annual_wholesale_rate_period,
+                       area, strengthen_power_grid, high_efficiency_bonus, fishing_environment, agriculture_fishing_green_energy, estimated_rate_reduction_next_year, estimated_sunshine, estimated_first_year_system, pr_annual_decline_rate):
+        # '=-K32'
+        K32 = callback_fuc.warranty_fee(20, warranty_annual_increment_rate, shape, roof_type_grid_connection_engineering, module_recycling_fund, installed_kw, system_capacity, annual_wholesale_rate_year, annual_wholesale_rate_period,
+                                        area, strengthen_power_grid, high_efficiency_bonus, fishing_environment, agriculture_fishing_green_energy, estimated_rate_reduction_next_year, estimated_sunshine, estimated_first_year_system, pr_annual_decline_rate)
+        res = -K32
+        return res
 
     # D29
-    def amount_total():
-        # "=-K32"
-        res = 0
-        return f" {res} % "
+    def amount_total(construction_cost, other_costs, customer_offers, warranty_annual_increment_rate, shape, roof_type_grid_connection_engineering, module_recycling_fund, installed_kw, system_capacity, annual_wholesale_rate_year, annual_wholesale_rate_period,
+                     area, strengthen_power_grid, high_efficiency_bonus, fishing_environment, agriculture_fishing_green_energy, estimated_rate_reduction_next_year, estimated_sunshine, estimated_first_year_system, pr_annual_decline_rate):
+        # "=-K33"
+        K33 = callback_fuc.warranty_fee_basic("sum", construction_cost, other_costs, customer_offers, warranty_annual_increment_rate, shape, roof_type_grid_connection_engineering, module_recycling_fund, installed_kw, system_capacity, annual_wholesale_rate_year, annual_wholesale_rate_period,
+                                              area, strengthen_power_grid, high_efficiency_bonus, fishing_environment, agriculture_fishing_green_energy, estimated_rate_reduction_next_year, estimated_sunshine, estimated_first_year_system, pr_annual_decline_rate)
+        res = -K33
+        return res
 
     # operating_expense_df
 
@@ -567,45 +605,43 @@ class callback_fuc:
 
     def illustrate_cleaning_fee_water():
         # ="每年"&C33*100&"%"
-        res = feature_fuc.find_first_number(
-            callback_fuc.scale_cleaning_fee_water())
-        return f" 每年 {res*100} %"
+        res = callback_fuc.scale_cleaning_fee_water()
+        return res*100
 
     # B34=
     def illustrate_property_insurance_costs():
         # "每年"&C34*100&"%""
-        res = feature_fuc.find_first_number(
-            callback_fuc.scale_property_insurance_costs())
-        return f" 每年 {res*100} %"
+        res = callback_fuc.scale_property_insurance_costs()
+        return res*100
 
     # "C33
     def scale_cleaning_fee_water():
         # 0.025%"
         res = 0.025
-        return f" {res} % "
+        return res
 
     # "C34
     def scale_property_insurance_costs():
         #  0.5%"
-        res = 0.05
-        return f" {res} % "
+        res = 0.5
+        return res
 
     # 'C35
-    def scale_installation_space_cost(construction_cost, other_costs, system_capacity, customer_offers, program_type, bank_loan_ratio):
+    def scale_installation_space_cost(annual_rent_money, annual_rent, construction_cost, other_costs, system_capacity, customer_offers, program_type, bank_loan_ratio, shape, roof_type_grid_connection_engineering, module_recycling_fund, installed_kw, annual_wholesale_rate_year, annual_wholesale_rate_period, area, strengthen_power_grid, high_efficiency_bonus, fishing_environment, agriculture_fishing_green_energy, estimated_rate_reduction_next_year, estimated_sunshine, estimated_first_year_system, pr_annual_decline_rate):
         # =IF(資料輸入!D10>0,ROUND(D35/H34,4),IF(資料輸入!D9>0,資料輸入!D9,0))'
         # todo callback
         res = 0
-        # D10 = callback_fuc.bank_loan_costs(
-        #     construction_cost, other_costs, program_type, bank_loan_ratio, system_capacity)
-        # D9 = callback_fuc.customer_discount_program_costs(
-        #     construction_cost, other_costs, system_capacity, customer_offers)
-        # D35 = ...
-        # H34 = ...
-        # if D10 > 0:
-        #     res = round(D35/H34, 4)
-        # else:
-        #     if D9 > 0:
-        #         res = D9
+        _D10 = feature_fuc.judge_is_none(annual_rent_money)
+        _D9 = feature_fuc.judge_is_none(annual_rent)
+        H34 = callback_fuc.electricity_income_statement_basic("average", shape, roof_type_grid_connection_engineering, module_recycling_fund, installed_kw, system_capacity, annual_wholesale_rate_year, annual_wholesale_rate_period,
+                                                              area, strengthen_power_grid, high_efficiency_bonus, fishing_environment, agriculture_fishing_green_energy, estimated_rate_reduction_next_year, estimated_sunshine, estimated_first_year_system, pr_annual_decline_rate)
+        if _D10 > 0:
+            D35 = feature_fuc.judge_is_none(callback_fuc.amount_installation_space_cost(annual_rent_money, annual_rent, system_capacity, construction_cost, other_costs, customer_offers, program_type, bank_loan_ratio, shape, roof_type_grid_connection_engineering, module_recycling_fund, installed_kw, annual_wholesale_rate_year,
+                                                                                        annual_wholesale_rate_period, area, strengthen_power_grid, high_efficiency_bonus, fishing_environment, agriculture_fishing_green_energy, estimated_rate_reduction_next_year, estimated_sunshine, estimated_first_year_system, pr_annual_decline_rate))
+            res = round(D35/H34, 4)
+        else:
+            if _D9 > 0:
+                res = _D9
         return res
 
      # 'C37=
@@ -625,8 +661,7 @@ class callback_fuc:
         #  =ROUND(D7*C33,0)'
         D7 = callback_fuc.total_project_costs(
             system_capacity, construction_cost, other_costs)
-        C33 = feature_fuc.find_first_number(
-            callback_fuc.scale_cleaning_fee_water())
+        C33 = callback_fuc.scale_cleaning_fee_water() / 100
         res = round(D7*C33, 0)
         return res
 
@@ -635,35 +670,39 @@ class callback_fuc:
         # =ROUND(D7*C34,0)'
         D7 = callback_fuc.total_project_costs(
             system_capacity, construction_cost, other_costs)
-        C34 = feature_fuc.find_first_number(
-            callback_fuc.scale_property_insurance_costs())
+        C34 = callback_fuc.scale_property_insurance_costs() / 100
         res = round(D7*C34, 0)
         return res
 
-    # # 'D35
-    # def amount_property_insurance_costs(system_capacity, construction_cost, other_costs):
-    #     # 'D35=IF(資料輸入!D9>0,ROUND(C35*H34,0),IF(資料輸入!D10="",0,資料輸入!D10))'
-    #     D9 =
-    #     D10 =
-    #     C35 =
-    #     H34 =
-    #     if D9 > 0:
-    #         res = round(C35*H34,0)
-    #     else:
-    #         if D10 == "":
-    #             res = 0
-    #         else:
-    #             res = D10
-    #     return res
+    # 'D35
+    def amount_installation_space_cost(annual_rent_money, annual_rent, system_capacity, construction_cost, other_costs, customer_offers, program_type, bank_loan_ratio, shape, roof_type_grid_connection_engineering, module_recycling_fund, installed_kw, annual_wholesale_rate_year, annual_wholesale_rate_period, area, strengthen_power_grid, high_efficiency_bonus, fishing_environment, agriculture_fishing_green_energy, estimated_rate_reduction_next_year, estimated_sunshine, estimated_first_year_system, pr_annual_decline_rate):
+        # 'D35=IF(資料輸入!D9>0,ROUND(C35*H34,0),IF(資料輸入!D10="",0,資料輸入!D10))'
+        _D10 = feature_fuc.judge_is_none(annual_rent_money)
+        _D9 = feature_fuc.judge_is_none(annual_rent)
+        H34 = feature_fuc.judge_is_none(callback_fuc.electricity_income_statement_basic("average", shape, roof_type_grid_connection_engineering, module_recycling_fund, installed_kw, system_capacity, annual_wholesale_rate_year, annual_wholesale_rate_period,
+                                                                                        area, strengthen_power_grid, high_efficiency_bonus, fishing_environment, agriculture_fishing_green_energy, estimated_rate_reduction_next_year, estimated_sunshine, estimated_first_year_system, pr_annual_decline_rate))
+        if _D9 > 0:
+            C35 = callback_fuc.scale_installation_space_cost(annual_rent_money, annual_rent, construction_cost, other_costs, system_capacity, customer_offers, program_type, bank_loan_ratio, shape, roof_type_grid_connection_engineering, module_recycling_fund, installed_kw, annual_wholesale_rate_year,
+                                                             annual_wholesale_rate_period, area, strengthen_power_grid, high_efficiency_bonus, fishing_environment, agriculture_fishing_green_energy, estimated_rate_reduction_next_year, estimated_sunshine, estimated_first_year_system, pr_annual_decline_rate)
+            res = round(C35*H34/100, 0)
+        else:
+            if _D10 == "":
+                res = 0
+            else:
+                res = _D10
+        return res
 
-    # # 'D36
-    # def amount_operating_expense_total(system_capacity, construction_cost, other_costs):
-    #     # =SUM(D33:D35)'
-    #     D33 = callback_fuc.amount_cleaning_fee_water(system_capacity, construction_cost, other_costs)
-    #     D34 = callback_fuc.amount_property_insurance_costs(system_capacity, construction_cost, other_costs)
-    #     D35 =
-    #     res = D33 + D34 + D35
-    #     return res
+    # 'D36
+    def amount_operating_expense_total(annual_rent_money, annual_rent, system_capacity, construction_cost, other_costs, customer_offers, program_type, bank_loan_ratio, shape, roof_type_grid_connection_engineering, module_recycling_fund, installed_kw, annual_wholesale_rate_year, annual_wholesale_rate_period, area, strengthen_power_grid, high_efficiency_bonus, fishing_environment, agriculture_fishing_green_energy, estimated_rate_reduction_next_year, estimated_sunshine, estimated_first_year_system, pr_annual_decline_rate):
+        # =SUM(D33:D35)'
+        D33 = callback_fuc.amount_cleaning_fee_water(
+            system_capacity, construction_cost, other_costs)
+        D34 = callback_fuc.amount_property_insurance_costs(
+            system_capacity, construction_cost, other_costs)
+        D35 = callback_fuc.amount_installation_space_cost(annual_rent_money, annual_rent, system_capacity, construction_cost, other_costs, customer_offers, program_type, bank_loan_ratio, shape, roof_type_grid_connection_engineering, module_recycling_fund, installed_kw, annual_wholesale_rate_year,
+                                                          annual_wholesale_rate_period, area, strengthen_power_grid, high_efficiency_bonus, fishing_environment, agriculture_fishing_green_energy, estimated_rate_reduction_next_year, estimated_sunshine, estimated_first_year_system, pr_annual_decline_rate)
+        res = D33 + D34 + D35
+        return res
 
     # 'D37
     def amount_module_recycling_fund(module_recycling_fund, system_capacity):
@@ -681,7 +720,10 @@ class callback_fuc:
         res = H3*C38
         return res
 
+    # return_on_investment_df
+
     # 1 G13 =資料輸入!D11
+
     def ese_1(estimated_first_year_system):
         D11 = feature_fuc.judge_is_none(estimated_first_year_system)
         res = D11
@@ -714,8 +756,23 @@ class callback_fuc:
         res = round(H5*round(H6*H3*365*ese, 0), 0)
         return res
 
+    # H33, H34
+    def electricity_income_statement_basic(type, shape, roof_type_grid_connection_engineering, module_recycling_fund, installed_kw, system_capacity, annual_wholesale_rate_year, annual_wholesale_rate_period, area, strengthen_power_grid, high_efficiency_bonus, fishing_environment, agriculture_fishing_green_energy, estimated_rate_reduction_next_year, estimated_sunshine, estimated_first_year_system, pr_annual_decline_rate):
+        res = 0
+        sum = 0
+        for item in range(1, 21):
+            eis = callback_fuc.electricity_income_statement(item, shape, roof_type_grid_connection_engineering, module_recycling_fund, installed_kw, system_capacity, annual_wholesale_rate_year, annual_wholesale_rate_period, area,
+                                                            strengthen_power_grid, high_efficiency_bonus, fishing_environment, agriculture_fishing_green_energy, estimated_rate_reduction_next_year, estimated_sunshine, estimated_first_year_system, pr_annual_decline_rate)
+            sum = sum + eis
+        if type == "sum":
+            res = sum
+        elif type == "average":
+            res = sum / 20
+        return res
+
     # H5
     # _N9 # =IF(I5="地面型",資料輸入!O56,IF(I5="水面型",資料輸入!O57,IF(D6="","",IF(I18="是",資料輸入!O55,IF((I17+D6)<20,資料輸入!O51,IF((I17+D6)<100,資料輸入!L59,IF((I17+D6)<500,資料輸入!O54,資料輸入!O55)))))))
+
     def estimated_wholesale_rate(shape, roof_type_grid_connection_engineering, module_recycling_fund, installed_kw, system_capacity, annual_wholesale_rate_year, annual_wholesale_rate_period, area, strengthen_power_grid, high_efficiency_bonus, fishing_environment, agriculture_fishing_green_energy, estimated_rate_reduction_next_year):
         _I5 = shape
         _I20 = roof_type_grid_connection_engineering
@@ -773,7 +830,6 @@ class callback_fuc:
         return res
 
     # _N51 ~ _N55 ( 地面型&水面型分開 )
-
     def plus_rate_total(roof_type_grid_connection_engineering, strengthen_power_grid, high_efficiency_bonus, fishing_environment, agriculture_fishing_green_energy, j_input, t_input=None):
         _G29 = _G29_
         _I21 = strengthen_power_grid
@@ -818,7 +874,6 @@ class callback_fuc:
         return res
 
     # _O56 ~ O57 ( 地面型水面型 )
-
     def electricity_sales_rate_type(annual_wholesale_rate_year, annual_wholesale_rate_period, area, strengthen_power_grid, high_efficiency_bonus, fishing_environment, agriculture_fishing_green_energy, estimated_rate_reduction_next_year, period_1, period_2, j_input):
         # =ROUND((ROUND(L56*(1+M56),4)+N56)*(1-$I$4),4)
         _L51 = callback_fuc.fit_upper_limit(
@@ -831,7 +886,7 @@ class callback_fuc:
         res = round((round(_L51*(1+_M51), 4) + _N51)*(1 - _I4), 4)
         return res
 
-    # _N51 ~ _N55 ( 地面型&水面型分開 )
+    # _N56, _N57 ( 地面型&水面型分開 )
     def plus_rate_total_type(strengthen_power_grid, high_efficiency_bonus, fishing_environment, agriculture_fishing_green_energy, j_input):
         _G29 = _G29_
         _I21 = strengthen_power_grid
@@ -879,21 +934,380 @@ class callback_fuc:
                 res = period_2
         return res
 
-    # def loan_disbursement_statement():
-    #     # =IF(資料輸入!$D$21="本利平均攤還",IF(F12>=$C$12,0,ROUND(PMT($C$11/12,$C$12*12,D$10,0,0)*12,0)),
-    #     # IF(銀行計算頁!D5="",0,-銀行計算頁!D5))
-    #     _D21 =
-    #     F12 =
-    #     C12 =
-    #     C11 =
-    #     D10 =
-    #     bank_D5 =
+    # I13
+    def loan_disbursement_statement(ese_num, repayment_type, bank_loan_term, program_type, bank_loan_ratio, bank_loan_rate, construction_cost, other_costs, system_capacity):
+        # =IF(資料輸入!$D$21="本利平均攤還",IF(F12>=$C$12,0,ROUND(PMT($C$11/12,$C$12*12,D$10,0,0)*12,0)),
+        # IF(銀行計算頁!D5="",0,-銀行計算頁!D5))
+        _D21 = repayment_type
+        F12 = ese_num - 1
+        C12 = callback_fuc.loan_term_percent(
+            bank_loan_term, program_type, bank_loan_ratio)
+        C11 = callback_fuc.loan_annual_interest_rate_percent(
+            program_type, bank_loan_rate)
+        D10 = callback_fuc.bank_loan_costs(
+            construction_cost, other_costs, program_type, bank_loan_ratio, system_capacity)
+        bank_D5 = callback_fuc.accumulated_amount(
+            ese_num, system_capacity, construction_cost, bank_loan_ratio, bank_loan_rate, bank_loan_term)  # bank
 
-    #     res = 0 if bank_D5 == "" else bank_D5
+        res = 0 if bank_D5 == "" else round(-bank_D5, 0)
 
-    #     if _D21 == "本利平均攤還":
-    #         if F12 >= C12:
-    #             res = 0
-    #         else:
-    #             res = round(npf.pmt((C11/100)/12, C12*12, D10, 0, 0)*12, 0)
-    #     return res
+        if _D21 == "本利平均攤還":
+            if F12 >= C12:
+                res = 0
+            else:
+                res = round(npf.pmt((C11/100)/12, C12*12, D10, 0, 0)*12, 0)
+        return res
+
+    def accumulated_amount(ese_num, system_capacity, construction_cost, bank_loan_ratio, bank_loan_rate, bank_loan_term):
+        _D6 = feature_fuc.judge_is_none(system_capacity)
+        _D7 = feature_fuc.judge_is_none(construction_cost)
+        _D22 = feature_fuc.judge_is_none(bank_loan_ratio) / 100
+        # bank_B4 =ROUND(資料輸入!D6*資料輸入!D7*資料輸入!D22,0) 貸款金額
+        bank_B4 = round(_D6*_D7*_D22, 2)
+        # bank_B5 =資料輸入!D23 年利率
+        bank_B5 = feature_fuc.judge_is_none(bank_loan_rate) / 100
+        # bank_B6 =資料輸入!D24 期數
+        bank_B6 = feature_fuc.judge_is_none(bank_loan_term)
+
+        res = 0
+        pay_start = 0
+        pay_end = 0
+        if ese_num <= bank_B6:
+            month_num_start = 1 + (12 * (ese_num-1))
+            month_num_end = 1 + (12 * ese_num)
+            # 前期本金餘額
+            ex_pay = bank_B4
+            # 償還本金
+            repay_principal = bank_B4 / (bank_B6 * 12)
+            for month in range(1, month_num_start):
+                # 償還利息
+                repay_interest = round(ex_pay * bank_B5/12, 0)
+                # 償還本利和
+                month_pay = repay_principal + repay_interest
+                # 下期本金餘額
+                ex_pay = ex_pay - repay_principal
+                pay_start = month_pay + pay_start
+
+            ex_pay = bank_B4
+            for month in range(1, month_num_end):
+                # 償還利息
+                repay_interest = round(ex_pay * bank_B5/12, 0)
+                # 償還本利和
+                month_pay = repay_principal + repay_interest
+                # 下期本金餘額
+                ex_pay = ex_pay - repay_principal
+                pay_end = month_pay + pay_end
+
+            res = pay_end - pay_start
+        return res
+
+    # J13~J17
+    def customer_discount_program(construction_cost, other_costs, system_capacity, customer_offers):
+        D20 = callback_fuc.customer_offers_costs(
+            construction_cost, other_costs, system_capacity, customer_offers)
+        return -D20
+
+    # K13~K17
+    def warranty_fee_before_5(construction_cost, other_costs, system_capacity, customer_offers):
+        D20 = callback_fuc.customer_offers_costs(
+            construction_cost, other_costs, system_capacity, customer_offers)
+        return D20
+
+    # K18~K32
+    def warranty_fee(ese_num, warranty_annual_increment_rate, shape, roof_type_grid_connection_engineering, module_recycling_fund, installed_kw, system_capacity, annual_wholesale_rate_year, annual_wholesale_rate_period, area, strengthen_power_grid, high_efficiency_bonus, fishing_environment, agriculture_fishing_green_energy, estimated_rate_reduction_next_year, estimated_sunshine, estimated_first_year_system, pr_annual_decline_rate):
+        # =-ROUND(H18*($C$25+(F18-$F$18)*資料輸入!$D$15),0)
+        res = 0
+        H18 = callback_fuc.electricity_income_statement(ese_num, shape, roof_type_grid_connection_engineering, module_recycling_fund, installed_kw, system_capacity, annual_wholesale_rate_year, annual_wholesale_rate_period,
+                                                        area, strengthen_power_grid, high_efficiency_bonus, fishing_environment, agriculture_fishing_green_energy, estimated_rate_reduction_next_year, estimated_sunshine, estimated_first_year_system, pr_annual_decline_rate)
+        C25 = _C25_ / 100
+        F18 = ese_num
+        _D15 = feature_fuc.judge_is_none(warranty_annual_increment_rate) / 100
+
+        res = -round(H18 * (C25 + ((F18 - _F18_)*_D15)), 0)
+        return res
+
+    # L13~L32
+    def operating_expenses(ese_num, annual_rent_money, annual_rent, development_costs, demolition_cost, system_capacity, whether_to_remove, construction_cost, other_costs, customer_offers, program_type, bank_loan_ratio, shape, roof_type_grid_connection_engineering, module_recycling_fund, installed_kw, annual_wholesale_rate_year, annual_wholesale_rate_period, area, strengthen_power_grid, high_efficiency_bonus, fishing_environment, agriculture_fishing_green_energy, estimated_rate_reduction_next_year, estimated_sunshine, estimated_first_year_system, pr_annual_decline_rate):
+        D36 = callback_fuc.amount_operating_expense_total(annual_rent_money, annual_rent, system_capacity, construction_cost, other_costs, customer_offers, program_type, bank_loan_ratio, shape, roof_type_grid_connection_engineering, module_recycling_fund, installed_kw,
+                                                          annual_wholesale_rate_year, annual_wholesale_rate_period, area, strengthen_power_grid, high_efficiency_bonus, fishing_environment, agriculture_fishing_green_energy, estimated_rate_reduction_next_year, estimated_sunshine, estimated_first_year_system, pr_annual_decline_rate)
+        D37 = callback_fuc.amount_module_recycling_fund(
+            module_recycling_fund, system_capacity)
+        D17 = feature_fuc.judge_is_none(development_costs)
+        _D12 = whether_to_remove
+        D38 = callback_fuc.amount_removal_fee(system_capacity, demolition_cost)
+        res = 0
+        if ese_num <= 5:
+            # =-D$36-D$37-D$17/5
+            res = -D36-D37-D17/5
+        elif ese_num > 5 and ese_num <= 10:
+            # =-D$36-D$37
+            res = -D36-D37
+        elif ese_num > 10 and ese_num <= 19:
+            # =-D$36
+            res = -D36
+        elif ese_num == 20:
+            # =-D$36-IF(資料輸入!D12="是",D38,0)
+            res = -D36
+            if _D12 == 1:
+                res = -D36-D38
+
+        return res
+
+    # # M12, N12
+    def total_cash_flow_0(system_capacity, construction_cost, other_costs, program_type, bank_loan_ratio, shape, strengthen_power_grid,  roof_type_parallel_connection_method, installed_kw, customer_offers, development_costs):
+        # =-D16
+        res = 0
+        D16 = callback_fuc.pay_after_loan_costs(system_capacity, construction_cost, other_costs, program_type, bank_loan_ratio,
+                                                shape, strengthen_power_grid,  roof_type_parallel_connection_method, installed_kw, customer_offers, development_costs)
+        res = -D16
+        return res
+
+    # M13~M32
+    def total_r(ese_num, shape, roof_type_grid_connection_engineering, module_recycling_fund, installed_kw, system_capacity, annual_wholesale_rate_year, annual_wholesale_rate_period, area, strengthen_power_grid, high_efficiency_bonus, fishing_environment, agriculture_fishing_green_energy, estimated_rate_reduction_next_year, estimated_sunshine, estimated_first_year_system, pr_annual_decline_rate, repayment_type, bank_loan_term, program_type, bank_loan_ratio, bank_loan_rate, construction_cost, other_costs, customer_offers, warranty_annual_increment_rate, annual_rent_money, annual_rent, development_costs, demolition_cost, whether_to_remove):
+        # =SUM(H13:L13)
+        # H13 + I13 + J13 + K13 + L13
+        H_input = callback_fuc.electricity_income_statement(ese_num, shape, roof_type_grid_connection_engineering, module_recycling_fund, installed_kw, system_capacity, annual_wholesale_rate_year, annual_wholesale_rate_period,
+                                                            area, strengthen_power_grid, high_efficiency_bonus, fishing_environment, agriculture_fishing_green_energy, estimated_rate_reduction_next_year, estimated_sunshine, estimated_first_year_system, pr_annual_decline_rate)
+        I_input = callback_fuc.loan_disbursement_statement(
+            ese_num, repayment_type, bank_loan_term, program_type, bank_loan_ratio, bank_loan_rate, construction_cost, other_costs, system_capacity)
+
+        J13 = callback_fuc.customer_discount_program(
+            construction_cost, other_costs, system_capacity, customer_offers)
+        J_input = J13 if ese_num <= 5 else 0
+
+        # K13~K17
+        K13 = callback_fuc.warranty_fee_before_5(
+            construction_cost, other_costs, system_capacity, customer_offers)
+        # K18~ K32
+        K18 = callback_fuc.warranty_fee(ese_num, warranty_annual_increment_rate, shape, roof_type_grid_connection_engineering, module_recycling_fund, installed_kw, system_capacity, annual_wholesale_rate_year, annual_wholesale_rate_period,
+                                        area, strengthen_power_grid, high_efficiency_bonus, fishing_environment, agriculture_fishing_green_energy, estimated_rate_reduction_next_year, estimated_sunshine, estimated_first_year_system, pr_annual_decline_rate)
+        K_input = K13 if ese_num <= 5 else K18
+        L_input = callback_fuc.operating_expenses(ese_num, annual_rent_money, annual_rent, development_costs, demolition_cost, system_capacity, whether_to_remove, construction_cost, other_costs, customer_offers, program_type, bank_loan_ratio, shape, roof_type_grid_connection_engineering, module_recycling_fund,
+                                                  installed_kw, annual_wholesale_rate_year, annual_wholesale_rate_period, area, strengthen_power_grid, high_efficiency_bonus, fishing_environment, agriculture_fishing_green_energy, estimated_rate_reduction_next_year, estimated_sunshine, estimated_first_year_system, pr_annual_decline_rate)
+        res = H_input + I_input + J_input + K_input + L_input
+
+        return res
+
+    # N13 ~N32
+
+    def cash_flow(ese_num, shape, roof_type_grid_connection_engineering, module_recycling_fund, installed_kw, system_capacity, annual_wholesale_rate_year, annual_wholesale_rate_period, area, strengthen_power_grid, high_efficiency_bonus, fishing_environment, agriculture_fishing_green_energy, estimated_rate_reduction_next_year, estimated_sunshine, estimated_first_year_system, pr_annual_decline_rate, repayment_type, bank_loan_term, program_type, bank_loan_ratio, bank_loan_rate, construction_cost, other_costs, customer_offers, warranty_annual_increment_rate, annual_rent_money, annual_rent, development_costs, demolition_cost, whether_to_remove, roof_type_parallel_connection_method):
+        # =M13+N12
+        N12 = callback_fuc.total_cash_flow_0(system_capacity, construction_cost, other_costs, program_type, bank_loan_ratio,
+                                             shape, strengthen_power_grid,  roof_type_parallel_connection_method, installed_kw, customer_offers, development_costs)
+        res = N12
+        for annual in range(1, ese_num+1):
+            M13 = callback_fuc.total_r(annual, shape, roof_type_grid_connection_engineering, module_recycling_fund, installed_kw, system_capacity, annual_wholesale_rate_year, annual_wholesale_rate_period, area, strengthen_power_grid, high_efficiency_bonus, fishing_environment, agriculture_fishing_green_energy, estimated_rate_reduction_next_year,
+                                       estimated_sunshine, estimated_first_year_system, pr_annual_decline_rate, repayment_type, bank_loan_term, program_type, bank_loan_ratio, bank_loan_rate, construction_cost, other_costs, customer_offers, warranty_annual_increment_rate, annual_rent_money, annual_rent, development_costs, demolition_cost, whether_to_remove)
+            res = res + M13
+        return res
+
+    # G33, G34
+    def estimated_system_efficiency_basic(type, estimated_first_year_system, pr_annual_decline_rate):
+        res = 0
+        sum = callback_fuc.ese_1(estimated_first_year_system)
+        for item in range(2, 21):
+            eis = callback_fuc.estimated_system_efficiency(
+                item, estimated_first_year_system, pr_annual_decline_rate)
+            sum = sum + eis
+        if type == "sum":
+            res = sum
+        elif type == "average":
+            res = sum / 20
+        return res
+
+    # I33
+    def loan_disbursement_statement_basic(type, repayment_type, bank_loan_term, program_type, bank_loan_ratio, bank_loan_rate, construction_cost, other_costs, system_capacity):
+        res = 0
+        sum = 0
+        for item in range(1, 21):
+            lds = callback_fuc.loan_disbursement_statement(
+                item, repayment_type, bank_loan_term, program_type, bank_loan_ratio, bank_loan_rate, construction_cost, other_costs, system_capacity)
+            sum = sum + lds
+        if type == "sum":
+            res = sum
+        elif type == "average":
+            res = sum / 20
+        return res
+
+    # J33
+    def customer_discount_program_basic(type, construction_cost, other_costs, system_capacity, customer_offers):
+        res = 0
+        sum = 0
+        for item in range(1, 21):
+            cdp = callback_fuc.customer_discount_program(
+                construction_cost, other_costs, system_capacity, customer_offers)
+            J_input = cdp if item <= 5 else 0
+            sum = sum + J_input
+        if type == "sum":
+            res = sum
+        elif type == "average":
+            res = sum / 20
+        return res
+
+    # K33
+    def warranty_fee_basic(type, construction_cost, other_costs, customer_offers, warranty_annual_increment_rate, shape, roof_type_grid_connection_engineering, module_recycling_fund, installed_kw, system_capacity, annual_wholesale_rate_year, annual_wholesale_rate_period,
+                           area, strengthen_power_grid, high_efficiency_bonus, fishing_environment, agriculture_fishing_green_energy, estimated_rate_reduction_next_year, estimated_sunshine, estimated_first_year_system, pr_annual_decline_rate):
+        res = 0
+        sum = 0
+        for item in range(1, 21):
+            # K13~K17
+            K13 = callback_fuc.warranty_fee_before_5(
+                construction_cost, other_costs, system_capacity, customer_offers)
+            # K18~ K32
+            K18 = callback_fuc.warranty_fee(item, warranty_annual_increment_rate, shape, roof_type_grid_connection_engineering, module_recycling_fund, installed_kw, system_capacity, annual_wholesale_rate_year, annual_wholesale_rate_period,
+                                            area, strengthen_power_grid, high_efficiency_bonus, fishing_environment, agriculture_fishing_green_energy, estimated_rate_reduction_next_year, estimated_sunshine, estimated_first_year_system, pr_annual_decline_rate)
+            K_input = K13 if item <= 5 else K18
+            sum = sum + K_input
+        if type == "sum":
+            res = sum
+        elif type == "average":
+            res = sum / 20
+        return res
+
+    # L33 operating_expenses
+
+    def operating_expenses_basic(type, annual_rent_money, annual_rent, development_costs, demolition_cost, system_capacity, whether_to_remove, construction_cost, other_costs, customer_offers, program_type, bank_loan_ratio, shape, roof_type_grid_connection_engineering, module_recycling_fund,
+                                 installed_kw, annual_wholesale_rate_year, annual_wholesale_rate_period, area, strengthen_power_grid, high_efficiency_bonus, fishing_environment, agriculture_fishing_green_energy, estimated_rate_reduction_next_year, estimated_sunshine, estimated_first_year_system, pr_annual_decline_rate):
+        res = 0
+        sum = 0
+        for item in range(1, 21):
+            L_input = callback_fuc.operating_expenses(item, annual_rent_money, annual_rent, development_costs, demolition_cost, system_capacity, whether_to_remove, construction_cost, other_costs, customer_offers, program_type, bank_loan_ratio, shape, roof_type_grid_connection_engineering, module_recycling_fund,
+                                                      installed_kw, annual_wholesale_rate_year, annual_wholesale_rate_period, area, strengthen_power_grid, high_efficiency_bonus, fishing_environment, agriculture_fishing_green_energy, estimated_rate_reduction_next_year, estimated_sunshine, estimated_first_year_system, pr_annual_decline_rate)
+            sum = sum + L_input
+        if type == "sum":
+            res = sum
+        elif type == "average":
+            res = sum / 20
+        return res
+
+    # M33
+    def total_return_on_investment_basic(type, shape, roof_type_grid_connection_engineering, module_recycling_fund, installed_kw, system_capacity, annual_wholesale_rate_year, annual_wholesale_rate_period, area, strengthen_power_grid, high_efficiency_bonus, fishing_environment, agriculture_fishing_green_energy, estimated_rate_reduction_next_year, estimated_sunshine, estimated_first_year_system, pr_annual_decline_rate, repayment_type, bank_loan_term, program_type, bank_loan_ratio, bank_loan_rate, construction_cost, other_costs, customer_offers, warranty_annual_increment_rate, annual_rent_money, annual_rent, development_costs, demolition_cost, whether_to_remove):
+        res = 0
+        sum = 0
+        for item in range(1, 21):
+            M_input = callback_fuc.total_r(item, shape, roof_type_grid_connection_engineering, module_recycling_fund, installed_kw, system_capacity, annual_wholesale_rate_year, annual_wholesale_rate_period, area, strengthen_power_grid, high_efficiency_bonus, fishing_environment, agriculture_fishing_green_energy, estimated_rate_reduction_next_year,
+                                           estimated_sunshine, estimated_first_year_system, pr_annual_decline_rate, repayment_type, bank_loan_term, program_type, bank_loan_ratio, bank_loan_rate, construction_cost, other_costs, customer_offers, warranty_annual_increment_rate, annual_rent_money, annual_rent, development_costs, demolition_cost, whether_to_remove)
+            sum = sum + M_input
+        if type == "sum":
+            res = sum
+        elif type == "average":
+            res = sum / 20
+        return res
+
+# wholesale_rate_df
+
+    # K4
+    def fit_1(annual_wholesale_rate_year, annual_wholesale_rate_period):
+        # =資料輸入!L51
+        _L51 = callback_fuc.fit_upper_limit(
+            annual_wholesale_rate_year, annual_wholesale_rate_period, 5.8952, 5.7848)
+        res = _L51
+        return res
+
+    # K5
+    def fit_2(annual_wholesale_rate_year, annual_wholesale_rate_period):
+        # =資料輸入!L52
+        _L52 = callback_fuc.fit_upper_limit(
+            annual_wholesale_rate_year, annual_wholesale_rate_period, 4.5549, 4.4538)
+        res = _L52
+        return res
+
+    # K6
+    def fit_3(annual_wholesale_rate_year, annual_wholesale_rate_period):
+        # =資料輸入!L54
+        _L52 = callback_fuc.fit_upper_limit(
+            annual_wholesale_rate_year, annual_wholesale_rate_period, 4.0970, 3.9666)
+        res = _L52
+        return res
+
+    # K7
+    def fit_4(annual_wholesale_rate_year, annual_wholesale_rate_period):
+        # =資料輸入!L55
+        L53 = callback_fuc.fit_upper_limit(
+            annual_wholesale_rate_year, annual_wholesale_rate_period, 4.1122, 3.9727)
+        res = L53
+        return res
+
+    # K8
+    def fit_5(annual_wholesale_rate_year, annual_wholesale_rate_period):
+        # =資料輸入!L56
+        L54 = callback_fuc.fit_upper_limit(
+            annual_wholesale_rate_year, annual_wholesale_rate_period, 4.0031, 3.8680)
+        res = L54
+        return res
+
+     # K9
+    def fit_6(annual_wholesale_rate_year, annual_wholesale_rate_period):
+        # =資料輸入!L57
+        L55 = callback_fuc.fit_upper_limit(
+            annual_wholesale_rate_year, annual_wholesale_rate_period, 4.3960, 4.2612)
+        res = L55
+        return res
+
+    # L4~ L9
+    def addition(area):
+        # =IF(資料輸入!I6="北部地區",資料輸入!I7,資料輸入!I6)
+        _I6 = area
+        _I7 = callback_fuc.regional_bonus(area)
+        res = _I7 if _I6 == "北部地區" else _I6
+        return res
+
+    # M4~ M9
+    def plus_rate_total_output(ese_num, roof_type_grid_connection_engineering, strengthen_power_grid,
+                               high_efficiency_bonus, fishing_environment, agriculture_fishing_green_energy):
+        res = 0
+        if ese_num == 1:
+            # =資料輸入!N51
+            res = callback_fuc.plus_rate_total(roof_type_grid_connection_engineering, strengthen_power_grid,
+                                               high_efficiency_bonus, fishing_environment, agriculture_fishing_green_energy, _J29_)
+        elif ese_num == 2:
+            # =資料輸入!N52
+            res = callback_fuc.plus_rate_total(roof_type_grid_connection_engineering, strengthen_power_grid,
+                                               high_efficiency_bonus, fishing_environment, agriculture_fishing_green_energy, _J30_)
+        elif ese_num == 3:
+            # =資料輸入!N54
+            res = callback_fuc.plus_rate_total(roof_type_grid_connection_engineering, strengthen_power_grid,
+                                               high_efficiency_bonus, fishing_environment, agriculture_fishing_green_energy, _J32_, _I32_)
+        elif ese_num == 4:
+            # =資料輸入!N55
+            res = callback_fuc.plus_rate_total(roof_type_grid_connection_engineering, strengthen_power_grid,
+                                               high_efficiency_bonus, fishing_environment, agriculture_fishing_green_energy, _J33_, _I33_)
+        elif ese_num == 5:
+            # =資料輸入!N56
+            res = callback_fuc.plus_rate_total_type(strengthen_power_grid, high_efficiency_bonus, fishing_environment,
+                                                    agriculture_fishing_green_energy, _J34_)
+        elif ese_num == 6:
+            # =資料輸入!N57
+            res = callback_fuc.plus_rate_total_type(strengthen_power_grid, high_efficiency_bonus, fishing_environment,
+                                                    agriculture_fishing_green_energy, _J35_)
+
+        return res
+
+    # N4 ~ N9
+    def electricity_sales_rate_output(ese_num, roof_type_grid_connection_engineering, annual_wholesale_rate_year, annual_wholesale_rate_period, area, strengthen_power_grid,
+                                      high_efficiency_bonus, fishing_environment, agriculture_fishing_green_energy, estimated_rate_reduction_next_year):
+        res = 0
+        if ese_num == 1:
+            # =資料輸入!O51
+            res = callback_fuc.electricity_sales_rate(roof_type_grid_connection_engineering, annual_wholesale_rate_year, annual_wholesale_rate_period, area, strengthen_power_grid,
+                                                      high_efficiency_bonus, fishing_environment, agriculture_fishing_green_energy, estimated_rate_reduction_next_year, 5.8952, 5.7848, _J29_)
+        elif ese_num == 2:
+            # =資料輸入!O52
+            res = callback_fuc.electricity_sales_rate(roof_type_grid_connection_engineering, annual_wholesale_rate_year, annual_wholesale_rate_period, area, strengthen_power_grid,
+                                                      high_efficiency_bonus, fishing_environment, agriculture_fishing_green_energy, estimated_rate_reduction_next_year, 4.5549, 4.4538, _J30_)
+        elif ese_num == 3:
+            # =資料輸入!O54
+            res = callback_fuc.electricity_sales_rate(roof_type_grid_connection_engineering, annual_wholesale_rate_year, annual_wholesale_rate_period, area, strengthen_power_grid,
+                                                      high_efficiency_bonus, fishing_environment, agriculture_fishing_green_energy, estimated_rate_reduction_next_year, 4.0970, 3.9666, _J32_, _I32_)
+        elif ese_num == 4:
+            # =資料輸入!O55
+            res = callback_fuc.electricity_sales_rate(roof_type_grid_connection_engineering, annual_wholesale_rate_year, annual_wholesale_rate_period, area, strengthen_power_grid,
+                                                      high_efficiency_bonus, fishing_environment, agriculture_fishing_green_energy, estimated_rate_reduction_next_year, 4.1122, 3.9727, _J33_, _I33_)
+        elif ese_num == 5:
+            # =資料輸入!O56
+            res = callback_fuc.electricity_sales_rate_type(annual_wholesale_rate_year, annual_wholesale_rate_period, area, strengthen_power_grid,
+                                                           high_efficiency_bonus, fishing_environment, agriculture_fishing_green_energy, estimated_rate_reduction_next_year, 4.0031, 3.8680, _J34_)
+        elif ese_num == 6:
+            res = callback_fuc.electricity_sales_rate_type(annual_wholesale_rate_year, annual_wholesale_rate_period, area, strengthen_power_grid,
+                                                           high_efficiency_bonus, fishing_environment, agriculture_fishing_green_energy, estimated_rate_reduction_next_year, 4.3960, 4.2612, _J35_)
+        return res
